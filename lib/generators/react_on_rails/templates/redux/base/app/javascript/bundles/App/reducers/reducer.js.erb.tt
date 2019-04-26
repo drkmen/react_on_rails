@@ -1,0 +1,15 @@
+import { combineReducers } from 'redux';
+import { <%= config[:file_name].upcase %>_NAME_UPDATE } from '../constants/<%= config[:file_class_name] %>Constants';
+
+const name = (state = '', action) => {
+  switch (action.type) {
+    case <%= config[:file_name].upcase %>_NAME_UPDATE:
+      return action.text;
+    default:
+      return state;
+  }
+};
+
+const <%= config[:file_class_name] %>Reducer = combineReducers({ name });
+
+export default <%= config[:file_class_name] %>Reducer;

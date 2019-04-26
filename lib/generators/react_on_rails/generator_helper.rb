@@ -54,4 +54,16 @@ Please add the following content to your #{file} file:
     empty_directory(parent_directories) unless dest_dir_exists?(parent_directories)
     copy_file source_file, destination_file
   end
+
+  def file_name
+    @file_name ||= options[:appname].underscore
+  end
+
+  def file_class_name
+    @file_class_name ||= options[:appname].camelize
+  end
+
+  def file_variable_name
+    @file_variable_name ||= file_name.tr("_", "-")
+  end
 end

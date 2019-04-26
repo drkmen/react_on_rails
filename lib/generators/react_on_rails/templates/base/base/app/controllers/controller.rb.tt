@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+class <%= config[:file_class_name] %>Controller < ApplicationController
+  layout "<%= config[:file_name] %>"
+
+  def index
+    @<%= config[:file_name] %>_props = { name: "Stranger" }
+  end
+end

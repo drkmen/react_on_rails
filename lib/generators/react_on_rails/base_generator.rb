@@ -18,23 +18,47 @@ module ReactOnRails
                    desc: "Install Redux gems and Redux version of Hello World Example",
                    aliases: "-R"
 
+      # --appname
+      class_option :appname,
+                   type: :string,
+                   default: "hello_world",
+                   desc: "Specify first component name"
+
       def add_hello_world_route
-        route "get 'hello_world', to: 'hello_world#index'"
+        route "get '#{file_name}', to: '#{file_name}#index'"
       end
 
       def create_react_directories
         dirs = %w[components]
-        dirs.each { |name| empty_directory("app/javascript/bundles/HelloWorld/#{name}") }
+        dirs.each { |name| empty_directory("app/javascript/bundles/#{file_class_name}/#{name}") }
       end
 
       def copy_base_files
         base_path = "base/base/"
-        base_files = %w[app/controllers/hello_world_controller.rb
-                        app/views/layouts/hello_world.html.erb
-                        config/initializers/react_on_rails.rb
-                        Procfile.dev
-                        Procfile.dev-server]
+        base_files = %w[Procfile.dev Procfile.dev-server]
         base_files.each { |file| copy_file("#{base_path}#{file}", file) }
+      end
+
+      def create_controller_file
+        config = {
+          file_class_name: file_class_name,
+          file_name: file_name
+        }
+
+        template "base/base/app/controllers/controller.rb",
+                 File.join("app/controllers", "#{file_name}_controller.rb"), config
+      end
+
+      def create_layout_file
+        file_variable_name
+        template "base/base/app/views/layouts/layout.html.erb",
+                 File.join("app/views/layouts", "#{file_name}.html.erb")
+      end
+
+      def create_initializer
+        file_variable_name
+        template "base/base/config/initializers/react_on_rails.rb",
+                 File.join("config/initializers", "react_on_rails.rb")
       end
 
       def add_base_gems_to_gemfile
@@ -81,7 +105,7 @@ module ReactOnRails
           ReactOnRails::TestHelper.configure_rspec_to_compile_assets(config)
       STR
 
-      def self.helpful_message
+      def self.helpful_message(file_name = "hello_world")
         <<-MSG.strip_heredoc
 
           What to do next:
@@ -91,11 +115,11 @@ module ReactOnRails
 
             - Include your webpack assets to your application layout.
 
-                <%= javascript_pack_tag 'hello-world-bundle' %>
+                <%= javascript_pack_tag '#{file_name.tr('_', '-')}-bundle' %>
 
             - Run `rails s` to start the Rails server and use Webpacker's default lazy compilation.
 
-            - Visit http://localhost:3000/hello_world and see your React On Rails app running!
+            - Visit http://localhost:3000/#{file_name} and see your React On Rails app running!
 
             - Run bin/webpack-dev-server to start the Webpack dev server for compilation of Webpack
               assets as soon as you save. This default setup with the dev server does not work
@@ -109,15 +133,15 @@ module ReactOnRails
             - To turn on HMR, edit config/webpacker.yml and set HMR to true. Restart the rails server
               and bin/webpack-dev-server. Or use Procfile.dev-server.
 
-            - To server render, change this line app/views/hello_world/index.html.erb to
+            - To server render, change this line app/views/#{file_name}/index.html.erb to
               `prerender: true` to see server rendering (right click on page and select "view source").
 
-                <%= react_component("HelloWorldApp", props: @hello_world_props, prerender: true) %>
+                <%= react_component("#{file_name.camelize}App", props: @#{file_name}_props, prerender: true) %>
         MSG
       end
 
       def print_helpful_message
-        GeneratorMessages.add_info(self.class.helpful_message)
+        GeneratorMessages.add_info(self.class.helpful_message(file_name))
       end
 
       private

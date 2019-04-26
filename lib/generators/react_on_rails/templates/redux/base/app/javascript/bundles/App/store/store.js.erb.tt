@@ -1,0 +1,8 @@
+import { createStore } from 'redux';
+import <%= config[:file_class_name] %>Reducer from '../reducers/<%= config[:file_class_name] %>Reducer';
+
+const configureStore = (railsProps) => (
+  createStore(<%= config[:file_class_name] %>Reducer, railsProps)
+);
+
+export default configureStore;

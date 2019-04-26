@@ -1,0 +1,8 @@
+/* eslint-disable import/prefer-default-export */
+
+import { <%= config[:file_name].upcase %>_NAME_UPDATE } from '../constants/<%= config[:file_class_name] %>Constants';
+
+export const updateName = (text) => ({
+  type: <%= config[:file_name].upcase %>_NAME_UPDATE,
+  text,
+});
